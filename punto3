@@ -1,0 +1,186 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+enum Bearing {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+};
+
+struct Position {
+    int x;
+    int y;
+};
+
+class Robot {
+
+private:
+
+    Position position;
+    Bearing bearing;
+
+public:
+
+    Robot(int x, int y, Bearing direction) {
+
+        position.x = x;
+        position.y = y;
+
+        bearing = direction;
+    }
+
+    void turnRight() {
+
+        switch (bearing) {
+
+            case NORTH:
+                bearing = EAST;
+                break;
+
+            case EAST:
+                bearing = SOUTH;
+                break;
+
+            case SOUTH:
+                bearing = WEST;
+                break;
+
+            case WEST:
+                bearing = NORTH;
+                break;
+        }
+    }
+
+    void turnLeft() {
+
+        switch (bearing) {
+
+            case NORTH:
+                bearing = WEST;
+                break;
+
+            case WEST:
+                bearing = SOUTH;
+                break;
+
+            case SOUTH:
+                bearing = EAST;
+                break;
+
+            case EAST:
+                bearing = NORTH;
+                break;
+        }
+    }
+
+    void advance() {
+
+        switch (bearing) {
+
+            case NORTH:
+                position.y++;
+                break;
+
+            case EAST:
+                position.x++;
+                break;
+
+            case SOUTH:
+                position.y--;
+                break;
+
+            case WEST:
+                position.x--;
+                break;
+        }
+    }
+
+    void execute(string instructions) {
+
+        for (char instruction : instructions) {
+
+            if (instruction == 'R') {
+                turnRight();
+            }
+
+            else if (instruction == 'L') {
+                turnLeft();
+            }
+
+            else if (instruction == 'A') {
+                advance();
+            }
+        }
+    }
+
+    void printResult() {
+
+        cout << "Posicion final: {" 
+             << position.x << ", " 
+             << position.y << "}\n";
+
+        cout << "Direccion final: ";
+
+        switch (bearing) {
+
+            case NORTH:
+                cout << "north";
+                break;
+
+            case EAST:
+                cout << "east";
+                break;
+
+            case SOUTH:
+                cout << "south";
+                break;
+
+            case WEST:
+                cout << "west";
+                break;
+        }
+
+        cout << "\n";
+    }
+};
+
+int main() {
+
+    cout << "=====================================\n";
+    cout << "         ROBOT SIMULATOR\n";
+    cout << "=====================================\n\n";
+
+    // Posicion inicial
+    int x = 7;
+    int y = 3;
+
+    // Direccion inicial: norte
+    Bearing direction = NORTH;
+
+    // Secuencia dada por el ejercicio
+    string instructions = "RAALAL";
+
+    cout << "Posicion inicial: {"
+         << x << ", "
+         << y << "}\n";
+
+    cout << "Direccion inicial: north\n";
+
+    cout << "Instrucciones: "
+         << instructions << "\n\n";
+
+    Robot robot(x, y, direction);
+
+    robot.execute(instructions);
+
+    robot.printResult();
+
+    cout << "\n=====================================\n";
+    cout << "             FIN DEL TEST\n";
+    cout << "=====================================\n";
+
+    return 0;
+}

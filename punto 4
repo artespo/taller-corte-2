@@ -1,0 +1,84 @@
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+struct Position {
+    int row;
+    int column;
+};
+
+class ChessBoard {
+
+private:
+
+    Position whiteQueen;
+    Position blackQueen;
+
+public:
+
+    ChessBoard(Position white, Position black) {
+
+        whiteQueen = white;
+        blackQueen = black;
+    }
+
+    bool canAttack() {
+
+        // Misma fila
+        if (whiteQueen.row == blackQueen.row) {
+            return true;
+        }
+
+        // Misma columna
+        if (whiteQueen.column == blackQueen.column) {
+            return true;
+        }
+
+        // Misma diagonal
+        if (abs(whiteQueen.row - blackQueen.row) ==
+            abs(whiteQueen.column - blackQueen.column)) {
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
+int main() {
+
+    cout << "=====================================\n";
+    cout << "            QUEEN ATTACK\n";
+    cout << "=====================================\n\n";
+
+    // Ejemplo del ejercicio:
+    // Reina blanca en c5
+    // Reina negra en f2
+
+    Position whiteQueen = {3, 2};
+    Position blackQueen = {6, 5};
+
+    cout << "Reina blanca: c5\n";
+    cout << "Reina negra: f2\n\n";
+
+    ChessBoard board(whiteQueen, blackQueen);
+
+    if (board.canAttack()) {
+
+        cout << "Resultado: SI\n";
+        cout << "Las reinas pueden atacarse.\n";
+    }
+
+    else {
+
+        cout << "Resultado: NO\n";
+        cout << "Las reinas no pueden atacarse.\n";
+    }
+
+    cout << "\n=====================================\n";
+    cout << "             FIN DEL TEST\n";
+    cout << "=====================================\n";
+
+    return 0;
+}

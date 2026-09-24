@@ -1,0 +1,177 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <queue>
+
+using namespace std;
+
+class Twitter {
+
+private:
+
+    struct Tweet {
+        int id;
+        int time;
+    };
+
+    struct Node {
+        int id;
+        int time;
+        int user;
+        int index;
+
+        bool operator<(const Node& other) const {
+            return time < other.time;
+        }
+    };
+
+    unordered_map<int, vector<Tweet>> tweets;
+    unordered_map<int, unordered_set<int>> following;
+
+    int currentTime = 0;
+
+public:
+
+    Twitter() {
+    }
+
+    void postTweet(int userId, int tweetId) {
+
+        tweets[userId].push_back({tweetId, currentTime});
+        currentTime++;
+    }
+
+    void follow(int followerId, int followeeId) {
+
+        if (followerId != followeeId) {
+            following[followerId].insert(followeeId);
+        }
+    }
+
+    void unfollow(int followerId, int followeeId) {
+
+        following[followerId].erase(followeeId);
+    }
+
+    vector<int> getNewsFeed(int userId) {
+
+        priority_queue<Node> pq;
+
+        // Tweets del propio usuario
+        if (!tweets[userId].empty()) {
+
+            int index = tweets[userId].size() - 1;
+
+            pq.push({
+                tweets[userId][index].id,
+                tweets[userId][index].time,
+                userId,
+                index
+            });
+        }
+
+        // Tweets de usuarios seguidos
+        for (int user : following[userId]) {
+
+            if (!tweets[user].empty()) {
+
+                int index = tweets[user].size() - 1;
+
+                pq.push({
+                    tweets[user][index].id,
+                    tweets[user][index].time,
+                    user,
+                    index
+                });
+            }
+        }
+
+        vector<int> result;
+
+        while (!pq.empty() && result.size() < 10) {
+
+            Node current = pq.top();
+            pq.pop();
+
+            result.push_back(current.id);
+
+            // Agregar el tweet anterior del mismo usuario
+            if (current.index > 0) {
+
+                int newIndex = current.index - 1;
+
+                pq.push({
+                    tweets[current.user][newIndex].id,
+                    tweets[current.user][newIndex].time,
+                    current.user,
+                    newIndex
+                });
+            }
+        }
+
+        return result;
+    }
+};
+
+void printVector(const vector<int>& v) {
+
+    cout << "[";
+
+    for (int i = 0; i < v.size(); i++) {
+
+        cout << v[i];
+
+        if (i < v.size() - 1) {
+            cout << ", ";
+        }
+    }
+
+    cout << "]";
+}
+
+int main() {
+
+    Twitter twitter;
+
+    cout << "=====================================\n";
+    cout << "        DESIGN TWITTER - 355\n";
+    cout << "=====================================\n\n";
+
+    // Usuario 1 publica un tweet
+    twitter.postTweet(1, 5);
+
+    cout << "Usuario 1 publica tweet 5\n";
+    cout << "Feed usuario 1: ";
+    printVector(twitter.getNewsFeed(1));
+    cout << "\n\n";
+
+    // Usuario 1 sigue al usuario 2
+    twitter.follow(1, 2);
+
+    cout << "Usuario 1 sigue al usuario 2\n\n";
+
+    // Usuario 2 publica un tweet
+    twitter.postTweet(2, 6);
+
+    cout << "Usuario 2 publica tweet 6\n";
+
+    cout << "Feed usuario 1: ";
+    printVector(twitter.getNewsFeed(1));
+    cout << "\n\n";
+
+    // Usuario 1 deja de seguir al usuario 2
+    twitter.unfollow(1, 2);
+
+    cout << "Usuario 1 deja de seguir al usuario 2\n";
+
+    cout << "Feed usuario 1: ";
+    printVector(twitter.getNewsFeed(1));
+    cout << "\n";
+
+    cout << "\n=====================================\n";
+    cout << "             FIN DEL TEST\n";
+    cout << "=====================================\n";
+
+    return 0;
+}

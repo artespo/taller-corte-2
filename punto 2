@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Spreadsheet {
+
+private:
+
+    vector<vector<int>> cells;
+
+    pair<int, int> getPosition(string cell) {
+
+        int column = cell[0] - 'A';
+
+        int row = stoi(cell.substr(1)) - 1;
+
+        return {row, column};
+    }
+
+    int getCellOrNumber(string value) {
+
+        // Si empieza por un número, es un número
+        if (value[0] >= '0' && value[0] <= '9') {
+            return stoi(value);
+        }
+
+        // Si no, es una celda
+        pair<int, int> position = getPosition(value);
+
+        return cells[position.first][position.second];
+    }
+
+public:
+
+    Spreadsheet(int rows) {
+
+        cells.resize(rows, vector<int>(26, 0));
+    }
+
+    void setCell(string cell, int value) {
+
+        pair<int, int> position = getPosition(cell);
+
+        cells[position.first][position.second] = value;
+    }
+
+    void resetCell(string cell) {
+
+        pair<int, int> position = getPosition(cell);
+
+        cells[position.first][position.second] = 0;
+    }
+
+    int getValue(string formula) {
+
+        // Quitamos el "="
+        string operation = formula.substr(1);
+
+        // Encontramos "+"
+        int plus = operation.find('+');
+
+        string first = operation.substr(0, plus);
+
+        string second = operation.substr(plus + 1);
+
+        int value1 = getCellOrNumber(first);
+        int value2 = getCellOrNumber(second);
+
+        return value1 + value2;
+    }
+};
+
+int main() {
+
+    Spreadsheet spreadsheet(3);
+
+    cout << "=====================================\n";
+    cout << "     DESIGN SPREADSHEET - 3484\n";
+    cout << "=====================================\n\n";
+
+    cout << "Spreadsheet creada con 3 filas y 26 columnas.\n\n";
+
+    // Prueba 1
+    cout << "Formula: =5+7\n";
+    cout << "Resultado: " << spreadsheet.getValue("=5+7") << "\n\n";
+
+    // Asignamos A1
+    spreadsheet.setCell("A1", 10);
+
+    cout << "A1 = 10\n";
+
+    cout << "Formula: =A1+6\n";
+    cout << "Resultado: " << spreadsheet.getValue("=A1+6") << "\n\n";
+
+    // Asignamos B2
+    spreadsheet.setCell("B2", 15);
+
+    cout << "B2 = 15\n";
+
+    cout << "Formula: =A1+B2\n";
+    cout << "Resultado: " << spreadsheet.getValue("=A1+B2") << "\n\n";
+
+    // Reiniciamos A1
+    spreadsheet.resetCell("A1");
+
+    cout << "A1 ha sido reiniciada.\n";
+
+    cout << "Formula: =A1+B2\n";
+    cout << "Resultado: " << spreadsheet.getValue("=A1+B2") << "\n";
+
+    cout << "\n=====================================\n";
+    cout << "             FIN DEL TEST\n";
+    cout << "=====================================\n";
+
+    return 0;
+}
